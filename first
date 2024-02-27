@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout scm
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    // Add build steps here
+                }
+            }
+        }
+
+        stage('Generate Patch') {
+            steps {
+                script {
+                    sh 'git diff > changes.patch'
+                }
+            }
+        }
+
+        stage('Apply Patch to Different Branch') {
+            steps {
+                script {
+                    // Replace 'target-branch' with the branch you want to apply the patch to
+                    sh 'git checkout -b target-branch'
+                    sh 'git apply < changes.patch'
+                    sh 'git add .'
+                    sh 'git commit -m "Apply changes from patch"'
+                    sh 'git push origin target-branch'
+                }
+            }
+        }
+    }
+}
